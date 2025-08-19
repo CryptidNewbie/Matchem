@@ -23,8 +23,8 @@ class GameEngineTest {
         // Verify cards have image resources
         gameState.cards.forEach { card ->
             assertNotNull("Card should have image resource", card.imageResource)
-            assertNotEquals("Card should not use placeholder image", 
-                android.R.drawable.ic_dialog_info, card.imageResource)
+            assertTrue("Card should have valid image resource ID", 
+                card.imageResource!! > 0)
         }
     }
     

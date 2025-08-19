@@ -17,8 +17,18 @@ case "$1" in
         fi
         ;;
     "basic")
-        echo "Current configuration is already basic/non-Android"
-        echo "✅ Basic Gradle tasks are available"
+        echo "Switching to enhanced basic configuration..."
+        if [ -f "build.gradle.kts.basic" ] && [ -f "app/build.gradle.kts.basic" ] && [ -f "settings.gradle.kts.basic" ]; then
+            cp build.gradle.kts.basic build.gradle.kts
+            cp app/build.gradle.kts.basic app/build.gradle.kts
+            cp settings.gradle.kts.basic settings.gradle.kts
+            echo "✅ Switched to enhanced basic configuration"
+            echo "✅ Basic Gradle tasks are available"
+            echo "✅ Core game logic can be compiled and tested"
+        else
+            echo "Current configuration is already basic/non-Android"
+            echo "✅ Basic Gradle tasks are available"
+        fi
         ;;
     "test")
         echo "Testing current configuration..."
