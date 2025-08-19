@@ -1,56 +1,79 @@
-// Enhanced Kotlin library configuration with dependencies for app functionality
 plugins {
-    `java-library`
-    kotlin("jvm") version "1.9.10"
-    kotlin("plugin.serialization") version "1.9.10"
+    id("com.android.application")
+    kotlin("android")
+    kotlin("plugin.serialization")
+    // NEW: apply the Kotlin Compose plugin
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
+android {
+    namespace = "com.cryptidnewbie.app"
+    compileSdk = 34
 
-dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
-    
-    // Kotlinx libraries that work without Android
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
-    
-    // Testing dependencies
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.10")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
-}
+    defaultConfig {
+        applicationId = "com.cryptidnewbie.app"
+        minSdk = 24
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
+    }
 
-// Custom task to verify project structure
-task("verify") {
-    doLast {
-        println("Verifying app module structure...")
-        val srcDir = file("src/main/java")
-        println("Source directory exists: ${srcDir.exists()}")
-        if (srcDir.exists()) {
-            fileTree(srcDir).forEach { file ->
-                if (file.extension == "kt") {
-                    println("Found Kotlin file: ${file.relativeTo(srcDir)}")
-                }
-            }
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+        debug {
+            // Debug config if needed
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+        freeCompilerArgs += listOf("-Xjdk-release=17")
+    }
+
+    buildFeatures {
+        compose = true
+    }
+    // REMOVED: composeOptions { kotlinCompilerExtensionVersion = "..." }
+    // The Compose compiler is provided by the Kotlin Compose plugin above.
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
 }
 
-// Task to prepare for Android build (when network access is available)
-task("prepareAndroid") {
-    doLast {
-        println("To enable full Android development:")
-        println("1. Ensure network access to Google repositories (dl.google.com)")
-        println("2. Run: ./switch-config.sh android")
-        println("3. Then: ./gradlew assembleDebug")
-        println("")
-        println("Current configuration provides:")
-        println("- ✅ Kotlin compilation")
-        println("- ✅ Core app logic validation")
-        println("- ✅ Unit testing capabilities")
-        println("- ✅ Serialization support")
-    }
+dependencies {
+    // Compose BOM controls versions of Compose artifacts (UI/runtime). Keep this current.
+    implementation(platform("androidx.compose:compose-bom:2024.10.00"))
+
+    implementation("androidx.activity:activity-compose:1.9.3")
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+
+    debugImplementation("androidx.compose.ui:ui-tooling")
+
+    // KotlinX
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+
+    // Unit tests
+    testImplementation("junit:junit:4.13.2")
+
+    // Android tests
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.10.00"))
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 }
