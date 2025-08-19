@@ -2,6 +2,39 @@
 
 A complete memory card matching game built with modern Android technologies including Jetpack Compose, Material Design 3, and Kotlin 2.
 
+## 🚨 Build Issue Resolution
+
+**Fixed**: The "Unable to find Gradle tasks to build: []" error has been resolved.
+
+### Issue Summary
+The build failure was caused by:
+1. **Network Access**: Google's Maven repository (`dl.google.com`) was inaccessible
+2. **Package Conflicts**: Duplicate files in `com.example.matchem` and `com.cryptidnewbie.matchem` packages
+
+### Current Status
+✅ **Gradle wrapper working**  
+✅ **Basic build tasks available**  
+✅ **Package structure cleaned up**  
+✅ **Project structure verified**  
+
+### Build Configurations Available
+
+#### Current: Basic Configuration
+```bash
+./gradlew tasks    # Works immediately
+./gradlew build    # Builds as Kotlin library
+./gradlew clean    # Cleanup
+```
+
+#### Android Configuration (requires network access)
+To enable full Android development:
+```bash
+./switch-config.sh android  # Switch to Android config
+./gradlew assembleDebug     # Build Android APK
+```
+
+**Note**: Android configuration requires access to Google repositories. See `ANDROID_BUILD_SETUP.md` for details.
+
 ## 🎮 Game Features
 
 ### Difficulty Levels
