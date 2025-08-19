@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Match\'em</string>
+    <string name="play">Play</string>
+    <string name="leaderboards">Leaderboards</string>
+    <string name="settings">Settings</string>
+    <string name="card_shop">Card Shop</string>
+    <string name="easy">Easy</string>
+    <string name="medium">Medium</string>
+    <string name="hard">Hard</string>
+    <string name="moves">Moves</string>
+    <string name="time">Time</string>
+    <string name="matches">Matches</string>
+    <string name="pause">Pause</string>
+    <string name="game_over">Game Over!</string>
+    <string name="play_again">Play Again</string>
+    <string name="main_menu">Main Menu</string>
+    <string name="sound_effects">Sound Effects</string>
+    <string name="reset_scores">Reset All Scores</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="fastest_time">Fastest Time</string>
+    <string name="fewest_moves">Fewest Moves</string>
+    <string name="purchase">Purchase</string>
+    <string name="equipped">Equipped</string>
+    <string name="restore_purchases">Restore Purchases</string>
+    <string name="unlock_all">Unlock All</string>
+    <string name="reset_confirmation">Are you sure you want to reset all scores? This action cannot be undone.</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="card_flipped">Card flipped</string>
+    <string name="card_matched">Cards matched</string>
+    <string name="game_paused">Game paused</string>
+</resources>
