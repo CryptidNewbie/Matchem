@@ -167,7 +167,7 @@ fun GameCard(
         contentAlignment = Alignment.Center
     ) {
         if (rotation <= 90f) {
-            // Card back - show BigfootRingFloor image
+            // Card back - show bigfoot_ring_floor image
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -175,7 +175,7 @@ fun GameCard(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.BigfootRingFloor),
+                    painter = painterResource(id = R.drawable.bigfoot_ring_floor),
                     contentDescription = "Card back",
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
