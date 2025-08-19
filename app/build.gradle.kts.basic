@@ -10,24 +10,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-
-// Configure source sets to exclude Android-specific files
-sourceSets {
-    main {
-        java {
-            exclude("**/MainActivity.kt")
-            exclude("**/MatchEmApplication.kt")
-            exclude("**/ui/**")
-            exclude("**/GameRepository.kt")
-        }
-    }
-}
-
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
     
