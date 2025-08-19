@@ -1,15 +1,20 @@
 package com.cryptidnewbie.matchem.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -23,7 +28,7 @@ fun CardShopScreen(
 ) {
     val availableCardBacks = remember {
         listOf(
-            CardBack("default", "Classic", android.R.drawable.ic_dialog_info, true, "Free"),
+            CardBack("default", "Classic", com.cryptidnewbie.matchem.R.drawable.BigfootRingFloor, true, "Free"),
             CardBack("red", "Red Pattern", android.R.drawable.ic_dialog_alert, false, "$0.99"),
             CardBack("blue", "Blue Pattern", android.R.drawable.ic_dialog_info, false, "$0.99"),
             CardBack("green", "Green Pattern", android.R.drawable.ic_menu_compass, false, "$0.99"),
@@ -115,16 +120,18 @@ fun CardBackItem(
                 .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Card preview placeholder
+            // Card preview
             Box(
                 modifier = Modifier
                     .size(80.dp)
-                    .padding(8.dp),
+                    .clip(RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "🎴",
-                    style = MaterialTheme.typography.headlineMedium
+                Image(
+                    painter = painterResource(id = cardBack.imageResource),
+                    contentDescription = "Card back preview",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
             }
             

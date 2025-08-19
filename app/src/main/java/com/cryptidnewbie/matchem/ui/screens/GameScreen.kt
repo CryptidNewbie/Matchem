@@ -1,6 +1,7 @@
 package com.cryptidnewbie.matchem.ui.screens
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,7 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -164,17 +167,18 @@ fun GameCard(
         contentAlignment = Alignment.Center
     ) {
         if (rotation <= 90f) {
-            // Card back
+            // Card back - show BigfootRingFloor image
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(CardBack, RoundedCornerShape(8.dp)),
+                    .clip(RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "?",
-                    color = Color.White,
-                    style = MaterialTheme.typography.headlineMedium
+                Image(
+                    painter = painterResource(id = R.drawable.BigfootRingFloor),
+                    contentDescription = "Card back",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
             }
         } else {
@@ -189,6 +193,7 @@ fun GameCard(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(backgroundColor, RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(8.dp))
                     .graphicsLayer { rotationY = 180f },
                 contentAlignment = Alignment.Center
             ) {
@@ -200,11 +205,22 @@ fun GameCard(
                         )
                     }
                     CardType.NORMAL -> {
-                        Text(
-                            text = "${card.pairId + 1}",
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        // Show the actual card image
+                        card.imageResource?.let { imageRes ->
+                            Image(
+                                painter = painterResource(id = imageRes),
+                                contentDescription = "Card image",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Fit
+                            )
+                        } ?: run {
+                            // Fallback if image resource is null
+                            Text(
+                                text = "${card.pairId + 1}",
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 }
             }
