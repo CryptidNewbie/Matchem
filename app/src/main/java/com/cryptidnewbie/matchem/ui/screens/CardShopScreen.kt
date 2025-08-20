@@ -28,7 +28,7 @@ fun CardShopScreen(
 ) {
     val availableCardBacks = remember {
         listOf(
-            CardBack("default", "Classic", com.cryptidnewbie.matchem.R.drawable.BigfootRingFloor, true, "Free"),
+            CardBack("default", "Classic", com.cryptidnewbie.matchem.R.drawable.bigfoot_ring_floor, true, "Free"),
             CardBack("red", "Red Pattern", android.R.drawable.ic_dialog_alert, false, "$0.99"),
             CardBack("blue", "Blue Pattern", android.R.drawable.ic_dialog_info, false, "$0.99"),
             CardBack("green", "Green Pattern", android.R.drawable.ic_menu_compass, false, "$0.99"),
