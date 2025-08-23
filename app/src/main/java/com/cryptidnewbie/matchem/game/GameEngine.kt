@@ -1,22 +1,73 @@
 package com.cryptidnewbie.matchem.game
 
+import com.cryptidnewbie.matchem.R
 import com.cryptidnewbie.matchem.data.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 
-class GameEngine {
+class GameEngine(private val scope: CoroutineScope) {
     private val _gameState = MutableStateFlow(GameState())
     val gameState: StateFlow<GameState> = _gameState.asStateFlow()
 
+    private val cardImages = listOf(
+        R.drawable.aquatic_missing_link,
+        R.drawable.black_mage_octopus_with_outline,
+        R.drawable.cryptid_md_logo_blue_outline,
+        R.drawable.cutout_bigfoot_head,
+        R.drawable.gorilla_pop,
+        R.drawable.gray_alien_abduction,
+        R.drawable.small_cryptid_md_green_logo512,
+        R.drawable.swan_wing,
+        // Since Hard mode needs 14 pairs, we'll duplicate the images here.
+        // You should add more images to your drawable folder to support this!
+        R.drawable.aquatic_missing_link,
+        R.drawable.black_mage_octopus_with_outline,
+        R.drawable.cryptid_md_logo_blue_outline,
+        R.drawable.cutout_bigfoot_head,
+        R.drawable.gorilla_pop,
+        R.drawable.gray_alien_abduction
+    )
+
     fun startNewGame(difficulty: GameDifficulty) {
-        val cards = generateCards(difficulty)
-        _gameState.value = GameState(
-            cards = cards,
-            difficulty = difficulty,
-            startTime = System.currentTimeMillis()
-        )
+        scope.launch {
+            val cards = generateCards(difficulty)
+            _gameState.value = GameState(
+                cards = cards,
+                difficulty = difficulty,
+                startTime = System.currentTimeMillis()
+            )
+        }
+    }
+
+    fun flipCard(cardId: Int) {
+        scope.launch {
+            val currentState = _gameState.value
+            val flippedCard = currentState.cards.find { it.id == cardId } ?: return@launch
+
+            if (flippedCard.isFlipped || flippedCard.isMatched || currentState.flippedCards.size >= 2) {
+                return@launch
+            }
+
+            val updatedCards = currentState.cards.map {
+                if (it.id == cardId) it.copy(isFlipped = true) else it
+            }
+
+            val newFlippedCards = currentState.flippedCards + cardId
+            val newMoves = currentState.moves + 1
+
+            _gameState.value = currentState.copy(
+                cards = updatedCards,
+                flippedCards = newFlippedCards,
+                moves = newMoves
+            )
+
+            checkFlippedCards()
+        }
     }
 
     private fun generateCards(difficulty: GameDifficulty): List<Card> {
@@ -43,106 +94,74 @@ class GameEngine {
                 cards.add(
                     Card(
                         id = cardId++,
-                        pairId = -1, // Bad cards don't have pairs
+                        pairId = -1,
                         type = CardType.BAD_CARD,
-                        imageResource = getBadCardImageResource()
+                        imageResource = null // Bad cards have no image
                     )
                 )
             }
         }
 
-        return cards.shuffled(Random.Default)
+        return cards.shuffled(Random)
     }
 
-    fun flipCard(cardId: Int) {
-        val currentState = _gameState.value
-        if (currentState.isPaused || currentState.isGameComplete) return
+    private fun checkFlippedCards() {
+        scope.launch {
+            val currentState = _gameState.value
+            if (currentState.flippedCards.size < 2) return@launch
 
-        val card = currentState.cards.find { it.id == cardId }
-        if (card == null || card.isFlipped || card.isMatched) return
+            // Allow a short delay to let the user see the card
+            delay(500)
 
-        // If two cards are already flipped, reset them first
-        if (currentState.flippedCards.size >= 2) {
-            resetFlippedCards()
-            return
-        }
+            val firstCard = currentState.cards.find { it.id == currentState.flippedCards[0] }
+            val secondCard = currentState.cards.find { it.id == currentState.flippedCards[1] }
 
-        // Flip the card
-        val updatedCards = currentState.cards.map { 
-            if (it.id == cardId) it.copy(isFlipped = true) else it 
-        }
-        
-        val newFlippedCards = currentState.flippedCards + cardId
-        
-        _gameState.value = currentState.copy(
-            cards = updatedCards,
-            flippedCards = newFlippedCards,
-            moves = currentState.moves + 1
-        )
-
-        // Check for bad card
-        if (card.type == CardType.BAD_CARD) {
-            handleBadCard()
-            return
-        }
-
-        // Check for match when two cards are flipped
-        if (newFlippedCards.size == 2) {
-            checkForMatch()
+            if (firstCard?.pairId == secondCard?.pairId) {
+                // Match
+                handleMatch(currentState.flippedCards)
+            } else {
+                // No match or a bad card, flip them back
+                resetFlippedCards()
+            }
         }
     }
 
     private fun resetFlippedCards() {
         val currentState = _gameState.value
         val updatedCards = currentState.cards.map { card ->
-            if (card.id in currentState.flippedCards && !card.isMatched) {
+            if (card.id in currentState.flippedCards) {
                 card.copy(isFlipped = false)
             } else {
                 card
             }
         }
-        
+
         _gameState.value = currentState.copy(
             cards = updatedCards,
             flippedCards = emptyList()
         )
     }
 
-    private fun checkForMatch() {
+    private fun handleMatch(flippedCards: List<Int>) {
         val currentState = _gameState.value
-        val flippedCards = currentState.flippedCards
-        if (flippedCards.size != 2) return
-
-        val card1 = currentState.cards.find { it.id == flippedCards[0] }
-        val card2 = currentState.cards.find { it.id == flippedCards[1] }
-
-        if (card1 != null && card2 != null && card1.pairId == card2.pairId) {
-            // Match found
-            val updatedCards = currentState.cards.map { card ->
-                if (card.id in flippedCards) {
-                    card.copy(isMatched = true)
-                } else {
-                    card
-                }
+        val updatedCards = currentState.cards.map { card ->
+            if (card.id in flippedCards) {
+                card.copy(isMatched = true)
+            } else {
+                card
             }
-
-            val newMatches = currentState.matches + 1
-            val isComplete = newMatches == currentState.difficulty.pairs
-
-            _gameState.value = currentState.copy(
-                cards = updatedCards,
-                flippedCards = emptyList(),
-                matches = newMatches,
-                isGameComplete = isComplete,
-                endTime = if (isComplete) System.currentTimeMillis() else null
-            )
         }
-        // If no match, cards will be reset on next flip
-    }
 
-    private fun handleBadCard() {
-        // Immediately end the turn for bad cards
-        resetFlippedCards()
+        val newMatches = currentState.matches + 1
+        val isComplete = newMatches == currentState.difficulty.pairs
+
+        _gameState.value = currentState.copy(
+            cards = updatedCards,
+            flippedCards = emptyList(),
+            matches = newMatches,
+            isGameComplete = isComplete,
+            endTime = if (isComplete) System.currentTimeMillis() else null
+        )
     }
 
     fun pauseGame() {
@@ -154,13 +173,7 @@ class GameEngine {
     }
 
     private fun getCardImageResource(pairIndex: Int): Int {
-        // For JVM compilation, return simple integer IDs
-        // In actual Android build, these would map to drawable resources
-        return pairIndex + 1000 // Offset to avoid conflicts
-    }
-
-    private fun getBadCardImageResource(): Int {
-        // Return placeholder ID for bad card in JVM build
-        return 9999
+        // This function now returns a valid resource ID from the list.
+        return cardImages[pairIndex % cardImages.size]
     }
 }

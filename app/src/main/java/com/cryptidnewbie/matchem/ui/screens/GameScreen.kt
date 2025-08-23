@@ -1,26 +1,47 @@
 package com.cryptidnewbie.matchem.ui.screens
 
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -30,10 +51,8 @@ import com.cryptidnewbie.matchem.R
 import com.cryptidnewbie.matchem.data.Card
 import com.cryptidnewbie.matchem.data.CardType
 import com.cryptidnewbie.matchem.data.GameDifficulty
-import com.cryptidnewbie.matchem.ui.theme.CardBack
-import com.cryptidnewbie.matchem.ui.theme.CardFront
-import com.cryptidnewbie.matchem.ui.theme.MatchedCard
 import kotlinx.coroutines.delay
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,16 +63,15 @@ fun GameScreen(
     viewModel: GameViewModel = viewModel()
 ) {
     val gameState by viewModel.gameState.collectAsState()
-    val context = LocalContext.current
-    
+
     LaunchedEffect(difficulty) {
         viewModel.startNewGame(difficulty)
     }
-    
+
     LaunchedEffect(gameState.isGameComplete) {
         if (gameState.isGameComplete && gameState.endTime != null) {
-            val timeInSeconds = ((gameState.endTime - gameState.startTime) / 1000).toInt()
-            delay(1000) // Brief delay to show final state
+            val timeInSeconds = ((gameState.endTime!! - gameState.startTime) / 1000).toInt()
+            delay(1000)
             onGameComplete(gameState.moves, timeInSeconds)
         }
     }
@@ -61,7 +79,7 @@ fun GameScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { 
+                title = {
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
@@ -74,17 +92,17 @@ fun GameScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
                     IconButton(
-                        onClick = { 
+                        onClick = {
                             if (gameState.isPaused) viewModel.resumeGame() else viewModel.pauseGame()
                         }
                     ) {
                         Icon(
-                            Icons.Default.Pause, 
+                            Icons.Default.Pause,
                             contentDescription = if (gameState.isPaused) "Resume" else stringResource(R.string.pause)
                         )
                     }
@@ -96,6 +114,7 @@ fun GameScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .background(Color(0xFF333333)) // Solid color to replace the gradient
                 .padding(8.dp)
         ) {
             if (gameState.isPaused) {
@@ -140,6 +159,19 @@ fun GameCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val cardColors = remember {
+        listOf(
+            Color(0xFFE57373), // Red
+            Color(0xFF81C784), // Green
+            Color(0xFF64B5F6), // Blue
+            Color(0xFFFFB74D), // Orange
+            Color(0xFFBA68C8), // Purple
+            Color(0xFF4DB6AC), // Teal
+            Color(0xFFE0E0E0), // Grey
+            Color(0xFFFFF176)  // Yellow
+        )
+    }
+
     var isFlipping by remember { mutableStateOf(false) }
     val rotation by animateFloatAsState(
         targetValue = if (card.isFlipped || card.isMatched) 180f else 0f,
@@ -147,7 +179,7 @@ fun GameCard(
         finishedListener = { isFlipping = false },
         label = "card_rotation"
     )
-    
+
     LaunchedEffect(card.isFlipped, card.isMatched) {
         if (card.isFlipped || card.isMatched) {
             isFlipping = true
@@ -157,7 +189,7 @@ fun GameCard(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .clickable(enabled = !card.isFlipped && !card.isMatched && !isFlipping) { 
+            .clickable(enabled = !card.isFlipped && !card.isMatched && !isFlipping) {
                 onClick()
             }
             .graphicsLayer {
@@ -183,12 +215,12 @@ fun GameCard(
             }
         } else {
             // Card front
-            val backgroundColor = when {
-                card.isMatched -> MatchedCard
-                card.type == CardType.BAD_CARD -> MaterialTheme.colorScheme.error
-                else -> CardFront
+            val backgroundColor = if (card.pairId != -1) {
+                cardColors.getOrElse(card.pairId % cardColors.size) { Color.LightGray }
+            } else {
+                Color.Transparent // Bad card has no background color
             }
-            
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -201,7 +233,8 @@ fun GameCard(
                     CardType.BAD_CARD -> {
                         Text(
                             text = "💀",
-                            style = MaterialTheme.typography.headlineSmall
+                            style = MaterialTheme.typography.headlineSmall,
+                            textAlign = TextAlign.Center
                         )
                     }
                     CardType.NORMAL -> {
@@ -233,24 +266,24 @@ fun GameTimer(
     startTime: Long,
     isRunning: Boolean
 ) {
-    var currentTime by remember { mutableStateOf(System.currentTimeMillis()) }
-    
+    var currentTime by remember { mutableLongStateOf(System.currentTimeMillis()) }
+
     LaunchedEffect(isRunning) {
         while (isRunning) {
             currentTime = System.currentTimeMillis()
             delay(1000)
         }
     }
-    
+
     val elapsed = if (startTime > 0) {
         ((currentTime - startTime) / 1000).toInt()
     } else 0
-    
+
     val minutes = elapsed / 60
     val seconds = elapsed % 60
-    
+
     Text(
-        text = "${stringResource(R.string.time)}: ${String.format("%02d:%02d", minutes, seconds)}",
+        text = "${stringResource(R.string.time)}: ${String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)}",
         style = MaterialTheme.typography.bodyMedium
     )
 }

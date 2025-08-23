@@ -66,7 +66,9 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.play.services.ads)
     implementation(libs.billing)
-    
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.compose.material:material-icons-extended")
+// Use the latest version
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

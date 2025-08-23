@@ -40,7 +40,7 @@ data class GameState(
 )
 
 data class Score(
-    val playerName: String,
+    val playerName: String = "Player",
     val moves: Int,
     val timeInSeconds: Int,
     val difficulty: GameDifficulty,

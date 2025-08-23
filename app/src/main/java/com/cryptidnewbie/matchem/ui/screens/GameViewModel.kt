@@ -9,31 +9,23 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class GameViewModel : ViewModel() {
-    private val gameEngine = GameEngine()
-    
+    private val gameEngine = GameEngine(viewModelScope)
+
     val gameState: StateFlow<GameState> = gameEngine.gameState
-    
+
     fun startNewGame(difficulty: GameDifficulty) {
-        viewModelScope.launch {
-            gameEngine.startNewGame(difficulty)
-        }
+        gameEngine.startNewGame(difficulty)
     }
-    
+
     fun flipCard(cardId: Int) {
-        viewModelScope.launch {
-            gameEngine.flipCard(cardId)
-        }
+        gameEngine.flipCard(cardId)
     }
-    
+
     fun pauseGame() {
-        viewModelScope.launch {
-            gameEngine.pauseGame()
-        }
+        gameEngine.pauseGame()
     }
-    
+
     fun resumeGame() {
-        viewModelScope.launch {
-            gameEngine.resumeGame()
-        }
+        gameEngine.resumeGame()
     }
 }
