@@ -2,6 +2,7 @@ package com.cryptidnewbie.matchem.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,7 +26,7 @@ fun DifficultySelectionScreen(
                 title = { Text("Select Difficulty") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -46,7 +47,7 @@ fun DifficultySelectionScreen(
                 modifier = Modifier.padding(bottom = 32.dp)
             )
             
-            GameDifficulty.values().forEach { difficulty ->
+            GameDifficulty.entries.forEach { difficulty ->
                 DifficultyCard(
                     difficulty = difficulty,
                     onClick = { onDifficultySelected(difficulty) },

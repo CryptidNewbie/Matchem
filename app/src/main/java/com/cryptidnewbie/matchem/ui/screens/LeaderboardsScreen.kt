@@ -2,6 +2,7 @@ package com.cryptidnewbie.matchem.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,8 +19,8 @@ import com.cryptidnewbie.matchem.data.GameDifficulty
 fun LeaderboardsScreen(
     onBackClick: () -> Unit
 ) {
-    var selectedTab by remember { mutableStateOf(0) }
-    val difficulties = GameDifficulty.values()
+    var selectedTab by remember { mutableIntStateOf(0) }
+    val difficulties = GameDifficulty.entries.toTypedArray()
 
     Scaffold(
         topBar = {
@@ -27,7 +28,7 @@ fun LeaderboardsScreen(
                 title = { Text(stringResource(R.string.leaderboards)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )

@@ -2,72 +2,38 @@ package com.cryptidnewbie.matchem.game
 
 import com.cryptidnewbie.matchem.R
 import com.cryptidnewbie.matchem.data.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import kotlin.random.Random
 
-class GameEngine(private val scope: CoroutineScope) {
+class GameEngine {
     private val _gameState = MutableStateFlow(GameState())
     val gameState: StateFlow<GameState> = _gameState.asStateFlow()
 
-    private val cardImages = listOf(
+    private val cardDrawables = listOf(
         R.drawable.aquatic_missing_link,
         R.drawable.black_mage_octopus_with_outline,
-        R.drawable.cryptid_md_logo_blue_outline,
         R.drawable.cutout_bigfoot_head,
         R.drawable.gorilla_pop,
         R.drawable.gray_alien_abduction,
-        R.drawable.small_cryptid_md_green_logo512,
         R.drawable.swan_wing,
-        // Since Hard mode needs 14 pairs, we'll duplicate the images here.
-        // You should add more images to your drawable folder to support this!
-        R.drawable.aquatic_missing_link,
-        R.drawable.black_mage_octopus_with_outline,
         R.drawable.cryptid_md_logo_blue_outline,
-        R.drawable.cutout_bigfoot_head,
-        R.drawable.gorilla_pop,
-        R.drawable.gray_alien_abduction
+        R.drawable.vampire_squid,
+        R.drawable.cube_uap,
+        R.drawable.flatwoods_monster512,
+        R.drawable.phoenix_lights,
+        R.drawable.tic_tac_ufo,
+        R.drawable.loser_card
     )
 
     fun startNewGame(difficulty: GameDifficulty) {
-        scope.launch {
-            val cards = generateCards(difficulty)
-            _gameState.value = GameState(
-                cards = cards,
-                difficulty = difficulty,
-                startTime = System.currentTimeMillis()
-            )
-        }
-    }
-
-    fun flipCard(cardId: Int) {
-        scope.launch {
-            val currentState = _gameState.value
-            val flippedCard = currentState.cards.find { it.id == cardId } ?: return@launch
-
-            if (flippedCard.isFlipped || flippedCard.isMatched || currentState.flippedCards.size >= 2) {
-                return@launch
-            }
-
-            val updatedCards = currentState.cards.map {
-                if (it.id == cardId) it.copy(isFlipped = true) else it
-            }
-
-            val newFlippedCards = currentState.flippedCards + cardId
-            val newMoves = currentState.moves + 1
-
-            _gameState.value = currentState.copy(
-                cards = updatedCards,
-                flippedCards = newFlippedCards,
-                moves = newMoves
-            )
-
-            checkFlippedCards()
-        }
+        val cards = generateCards(difficulty)
+        _gameState.value = GameState(
+            cards = cards,
+            difficulty = difficulty,
+            startTime = System.currentTimeMillis()
+        )
     }
 
     private fun generateCards(difficulty: GameDifficulty): List<Card> {
@@ -94,58 +60,31 @@ class GameEngine(private val scope: CoroutineScope) {
                 cards.add(
                     Card(
                         id = cardId++,
-                        pairId = -1,
+                        pairId = -1, // Bad cards don't have pairs
                         type = CardType.BAD_CARD,
-                        imageResource = null // Bad cards have no image
+                        imageResource = getBadCardImageResource()
                     )
                 )
             }
         }
 
-        return cards.shuffled(Random)
+        return cards.shuffled(Random.Default)
     }
 
-    private fun checkFlippedCards() {
-        scope.launch {
-            val currentState = _gameState.value
-            if (currentState.flippedCards.size < 2) return@launch
-
-            // Allow a short delay to let the user see the card
-            delay(500)
-
-            val firstCard = currentState.cards.find { it.id == currentState.flippedCards[0] }
-            val secondCard = currentState.cards.find { it.id == currentState.flippedCards[1] }
-
-            if (firstCard?.pairId == secondCard?.pairId) {
-                // Match
-                handleMatch(currentState.flippedCards)
-            } else {
-                // No match or a bad card, flip them back
-                resetFlippedCards()
-            }
-        }
-    }
-
-    private fun resetFlippedCards() {
-        val currentState = _gameState.value
-        val updatedCards = currentState.cards.map { card ->
-            if (card.id in currentState.flippedCards) {
-                card.copy(isFlipped = false)
-            } else {
-                card
-            }
-        }
-
-        _gameState.value = currentState.copy(
-            cards = updatedCards,
-            flippedCards = emptyList()
+    fun flipCard(cardId: Int) {
+        _gameState.value = _gameState.value.copy(
+            cards = _gameState.value.cards.map {
+                if (it.id == cardId) it.copy(isFlipped = true) else it
+            },
+            flippedCards = _gameState.value.flippedCards + cardId,
+            moves = _gameState.value.moves + 1
         )
     }
 
-    private fun handleMatch(flippedCards: List<Int>) {
+    fun markCardsAsMatched(cardIds: List<Int>) {
         val currentState = _gameState.value
         val updatedCards = currentState.cards.map { card ->
-            if (card.id in flippedCards) {
+            if (card.id in cardIds) {
                 card.copy(isMatched = true)
             } else {
                 card
@@ -164,6 +103,21 @@ class GameEngine(private val scope: CoroutineScope) {
         )
     }
 
+    fun resetFlippedCards() {
+        val currentState = _gameState.value
+        val updatedCards = currentState.cards.map { card ->
+            if (card.id in currentState.flippedCards) {
+                card.copy(isFlipped = false)
+            } else {
+                card
+            }
+        }
+        _gameState.value = currentState.copy(
+            cards = updatedCards,
+            flippedCards = emptyList()
+        )
+    }
+
     fun pauseGame() {
         _gameState.value = _gameState.value.copy(isPaused = true)
     }
@@ -172,8 +126,11 @@ class GameEngine(private val scope: CoroutineScope) {
         _gameState.value = _gameState.value.copy(isPaused = false)
     }
 
-    private fun getCardImageResource(pairIndex: Int): Int {
-        // This function now returns a valid resource ID from the list.
-        return cardImages[pairIndex % cardImages.size]
+    private fun getCardImageResource(pairIndex: Int): Int? {
+        return cardDrawables.getOrNull(pairIndex % cardDrawables.size)
+    }
+
+    private fun getBadCardImageResource(): Int {
+        return R.drawable.loser_card
     }
 }

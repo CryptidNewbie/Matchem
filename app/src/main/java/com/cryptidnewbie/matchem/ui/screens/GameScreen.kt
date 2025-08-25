@@ -33,7 +33,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,7 +43,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cryptidnewbie.matchem.R
@@ -114,11 +112,10 @@ fun GameScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(Color(0xFF333333)) // Solid color to replace the gradient
+                .background(Color(0xFF333333))
                 .padding(8.dp)
         ) {
             if (gameState.isPaused) {
-                // Pause overlay
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -135,7 +132,7 @@ fun GameScreen(
                 }
             } else {
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(difficulty.columns),
+                    columns = GridCells.Fixed(gameState.difficulty.columns),
                     contentPadding = PaddingValues(4.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -161,35 +158,21 @@ fun GameCard(
 ) {
     val cardColors = remember {
         listOf(
-            Color(0xFFE57373), // Red
-            Color(0xFF81C784), // Green
-            Color(0xFF64B5F6), // Blue
-            Color(0xFFFFB74D), // Orange
-            Color(0xFFBA68C8), // Purple
-            Color(0xFF4DB6AC), // Teal
-            Color(0xFFE0E0E0), // Grey
-            Color(0xFFFFF176)  // Yellow
+            Color(0xFFE57373), Color(0xFF81C784), Color(0xFF64B5F6), Color(0xFFFFB74D),
+            Color(0xFFBA68C8), Color(0xFF4DB6AC), Color(0xFFE0E0E0), Color(0xFFFFF176)
         )
     }
 
-    var isFlipping by remember { mutableStateOf(false) }
     val rotation by animateFloatAsState(
         targetValue = if (card.isFlipped || card.isMatched) 180f else 0f,
         animationSpec = tween(durationMillis = 300),
-        finishedListener = { isFlipping = false },
         label = "card_rotation"
     )
-
-    LaunchedEffect(card.isFlipped, card.isMatched) {
-        if (card.isFlipped || card.isMatched) {
-            isFlipping = true
-        }
-    }
 
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .clickable(enabled = !card.isFlipped && !card.isMatched && !isFlipping) {
+            .clickable(enabled = !card.isFlipped && !card.isMatched) {
                 onClick()
             }
             .graphicsLayer {
@@ -199,7 +182,7 @@ fun GameCard(
         contentAlignment = Alignment.Center
     ) {
         if (rotation <= 90f) {
-            // Card back - show bigfoot_ring_floor image
+            // Card back
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -215,10 +198,10 @@ fun GameCard(
             }
         } else {
             // Card front
-            val backgroundColor = if (card.pairId != -1) {
+            val backgroundColor = if (card.type == CardType.NORMAL && card.pairId >= 0) {
                 cardColors.getOrElse(card.pairId % cardColors.size) { Color.LightGray }
             } else {
-                Color.Transparent // Bad card has no background color
+                Color.Transparent
             }
 
             Box(
@@ -231,27 +214,20 @@ fun GameCard(
             ) {
                 when (card.type) {
                     CardType.BAD_CARD -> {
-                        Text(
-                            text = "💀",
-                            style = MaterialTheme.typography.headlineSmall,
-                            textAlign = TextAlign.Center
+                        Image(
+                            painter = painterResource(id = R.drawable.loser_card),
+                            contentDescription = "Bad card",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit
                         )
                     }
                     CardType.NORMAL -> {
-                        // Show the actual card image
                         card.imageResource?.let { imageRes ->
                             Image(
                                 painter = painterResource(id = imageRes),
                                 contentDescription = "Card image",
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Fit
-                            )
-                        } ?: run {
-                            // Fallback if image resource is null
-                            Text(
-                                text = "${card.pairId + 1}",
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
