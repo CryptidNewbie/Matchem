@@ -51,17 +51,17 @@ fun MatchEmNavigation(
 
         composable(Screen.Game.route) { backStackEntry ->
             val difficultyStr = backStackEntry.arguments?.getString("difficulty") ?: GameDifficulty.EASY.name
+            val difficultyEnum = GameDifficulty.valueOf(difficultyStr)
             GameScreen(
-                difficulty = difficultyStr,
-                onBackClick = { navController.popBackStack() },
-                onWin = { moves, timeInSeconds ->
-                    val difficultyEnum = GameDifficulty.valueOf(difficultyStr)
+                difficulty = difficultyEnum,
+                onGameComplete = { moves: Int, timeInSeconds: Int ->
                     navController.navigate(
                         Screen.GameOver.createRoute(difficultyEnum, moves, timeInSeconds)
                     ) {
                         popUpTo(Screen.Game.route) { inclusive = true }
                     }
-                }
+                },
+                onBackClick = { navController.popBackStack() }
             )
         }
 
