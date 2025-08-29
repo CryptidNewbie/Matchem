@@ -12,9 +12,11 @@ import com.google.android.gms.ads.MobileAds
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
+
         super.onCreate(savedInstanceState)
 
-        // This is a one-time initialization for the AdMob SDK
+        // One-time AdMob SDK initialization
         MobileAds.initialize(this) {}
 
         setContent {
