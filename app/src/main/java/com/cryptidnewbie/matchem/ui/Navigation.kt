@@ -1,6 +1,6 @@
 package com.cryptidnewbie.matchem.ui
 
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,7 +15,7 @@ sealed class Screen(val route: String) {
         fun createRoute(difficulty: GameDifficulty) = "game/${difficulty.name}"
     }
     object GameOver : Screen("game_over/{difficulty}/{moves}/{time}") {
-        fun createRoute(difficulty: GameDifficulty, moves: Int, time: Int) = 
+        fun createRoute(difficulty: GameDifficulty, moves: Int, time: Int) =
             "game_over/${difficulty.name}/$moves/$time"
     }
     object Settings : Screen("settings")
@@ -39,7 +39,7 @@ fun MatchEmNavigation(
                 onCardShopClick = { navController.navigate(Screen.CardShop.route) }
             )
         }
-        
+
         composable(Screen.DifficultySelection.route) {
             DifficultySelectionScreen(
                 onDifficultySelected = { difficulty ->
@@ -48,37 +48,36 @@ fun MatchEmNavigation(
                 onBackClick = { navController.popBackStack() }
             )
         }
-        
+
         composable(Screen.Game.route) { backStackEntry ->
-            val difficulty = backStackEntry.arguments?.getString("difficulty")
-                ?.let { GameDifficulty.valueOf(it) } ?: GameDifficulty.EASY
-            
+            val difficultyStr = backStackEntry.arguments?.getString("difficulty") ?: GameDifficulty.EASY.name
             GameScreen(
-                difficulty = difficulty,
-                onGameComplete = { moves, timeInSeconds ->
+                difficulty = difficultyStr,
+                onBackClick = { navController.popBackStack() },
+                onWin = { moves, timeInSeconds ->
+                    val difficultyEnum = GameDifficulty.valueOf(difficultyStr)
                     navController.navigate(
-                        Screen.GameOver.createRoute(difficulty, moves, timeInSeconds)
+                        Screen.GameOver.createRoute(difficultyEnum, moves, timeInSeconds)
                     ) {
                         popUpTo(Screen.Game.route) { inclusive = true }
                     }
-                },
-                onBackClick = { navController.popBackStack() }
+                }
             )
         }
-        
+
         composable(Screen.GameOver.route) { backStackEntry ->
-            val difficulty = backStackEntry.arguments?.getString("difficulty")
-                ?.let { GameDifficulty.valueOf(it) } ?: GameDifficulty.EASY
+            val difficultyStr = backStackEntry.arguments?.getString("difficulty") ?: GameDifficulty.EASY.name
             val moves = backStackEntry.arguments?.getString("moves")?.toIntOrNull() ?: 0
             val time = backStackEntry.arguments?.getString("time")?.toIntOrNull() ?: 0
-            
+            val difficultyEnum = GameDifficulty.valueOf(difficultyStr)
+
             GameOverScreen(
-                difficulty = difficulty,
+                difficulty = difficultyEnum,
                 moves = moves,
                 timeInSeconds = time,
                 onPlayAgain = {
-                    navController.navigate(Screen.Game.createRoute(difficulty)) {
-                        popUpTo(Screen.MainMenu.route)
+                    navController.navigate(Screen.Game.createRoute(difficultyEnum)) {
+                        popUpTo(Screen.MainMenu.route) { inclusive = false }
                     }
                 },
                 onMainMenu = {
@@ -88,19 +87,19 @@ fun MatchEmNavigation(
                 }
             )
         }
-        
+
         composable(Screen.Settings.route) {
             SettingsScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }
-        
+
         composable(Screen.Leaderboards.route) {
             LeaderboardsScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }
-        
+
         composable(Screen.CardShop.route) {
             CardShopScreen(
                 onBackClick = { navController.popBackStack() }

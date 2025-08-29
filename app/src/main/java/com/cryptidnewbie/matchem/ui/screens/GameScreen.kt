@@ -198,7 +198,7 @@ fun GameCard(
             }
         } else {
             // Card front
-            val backgroundColor = if (card.type == CardType.NORMAL && card.pairId >= 0) {
+            val backgroundColor = if (card.pairId != -1) {
                 cardColors.getOrElse(card.pairId % cardColors.size) { Color.LightGray }
             } else {
                 Color.Transparent

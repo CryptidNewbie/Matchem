@@ -1,14 +1,23 @@
 package com.cryptidnewbie.matchem.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Leaderboard
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.cryptidnewbie.matchem.R
+import com.cryptidnewbie.matchem.ui.ads.BannerAdView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,6 +39,13 @@ fun MainMenuScreen(
                     )
                 }
             )
+        },
+        bottomBar = {
+            BannerAdView(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            )
         }
     ) { paddingValues ->
         Column(
@@ -44,67 +60,104 @@ fun MainMenuScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 14.dp),
+                shape = RoundedCornerShape(18.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                )
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
+                    // Optional Logo (replace with your logo resource)
+                    Image(
+                        painter = painterResource(id = R.drawable.cryptid_md_logo_blue_outline),
+                        contentDescription = "App Logo",
+                        modifier = Modifier
+                            .size(80.dp)
+                            .padding(bottom = 8.dp)
+                    )
+
                     Text(
                         text = "Welcome to Match'em!",
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                         textAlign = TextAlign.Center
                     )
-                    
+
                     Text(
                         text = "Test your memory by matching pairs of cards",
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
-                    Button(
+
+                    ElevatedButton(
                         onClick = onPlayClick,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp)
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.elevatedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
                     ) {
                         Text(
                             text = stringResource(R.string.play),
-                            style = MaterialTheme.typography.titleMedium
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                         )
                     }
-                    
-                    OutlinedButton(
+
+                    FilledTonalButton(
                         onClick = onLeaderboardsClick,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(16.dp)
                     ) {
-                        Text(stringResource(R.string.leaderboards))
+                        Icon(Icons.Default.Leaderboard, contentDescription = "Leaderboards")
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.leaderboards),
+                            style = MaterialTheme.typography.titleMedium
+                        )
                     }
-                    
-                    OutlinedButton(
+
+                    FilledTonalButton(
                         onClick = onCardShopClick,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(16.dp)
                     ) {
-                        Text(stringResource(R.string.card_shop))
+                        Icon(Icons.Default.ShoppingCart, contentDescription = "Card Shop")
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.card_shop),
+                            style = MaterialTheme.typography.titleMedium
+                        )
                     }
-                    
-                    OutlinedButton(
+
+                    FilledTonalButton(
                         onClick = onSettingsClick,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(16.dp)
                     ) {
-                        Text(stringResource(R.string.settings))
+                        Icon(Icons.Default.Settings, contentDescription = "Settings")
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.settings),
+                            style = MaterialTheme.typography.titleMedium
+                        )
                     }
                 }
             }
