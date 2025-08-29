@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -141,7 +142,7 @@ fun GameScreen(
                         GameCard(
                             card = card,
                             onClick = { viewModel.flipCard(card.id) },
-                            modifier = Modifier.aspectRatio(1f)
+                            modifier = Modifier.size(140.dp)
                         )
                     }
                 }

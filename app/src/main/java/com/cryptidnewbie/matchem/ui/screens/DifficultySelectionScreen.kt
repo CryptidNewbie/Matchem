@@ -1,5 +1,6 @@
 package com.cryptidnewbie.matchem.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -8,10 +9,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.layout.ContentScale
 import com.cryptidnewbie.matchem.R
 import com.cryptidnewbie.matchem.data.GameDifficulty
 
@@ -21,42 +25,51 @@ fun DifficultySelectionScreen(
     onDifficultySelected: (GameDifficulty) -> Unit,
     onBackClick: () -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Select Difficulty") },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(R.drawable.background_main),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Select Difficulty") },
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        }
                     }
-                }
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "Choose your challenge level",
-                style = MaterialTheme.typography.headlineSmall,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 32.dp),
-                color = MaterialTheme.colorScheme.onBackground
-            )
-
-            GameDifficulty.entries.forEach { difficulty ->
-                DifficultyCard(
-                    difficulty = difficulty,
-                    onClick = { onDifficultySelected(difficulty) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
                 )
+            },
+            containerColor = Color.Transparent // <-- makes the background visible!
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Choose your challenge level",
+                    style = MaterialTheme.typography.headlineSmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 32.dp),
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+
+                GameDifficulty.entries.forEach { difficulty ->
+                    DifficultyCard(
+                        difficulty = difficulty,
+                        onClick = { onDifficultySelected(difficulty) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    )
+                }
             }
         }
     }
@@ -107,14 +120,6 @@ fun DifficultyCard(
                 color = MaterialTheme.colorScheme.onSurface
             )
 
-            if (difficulty.hasBadCards) {
-                Text(
-                    text = "⚠️ Contains bad cards that end your turn!",
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 6.dp)
-                )
             }
         }
     }
-}

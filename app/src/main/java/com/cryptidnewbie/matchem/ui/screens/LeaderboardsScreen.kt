@@ -1,16 +1,18 @@
 package com.cryptidnewbie.matchem.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.layout.ContentScale
 import com.cryptidnewbie.matchem.R
 import com.cryptidnewbie.matchem.data.GameDifficulty
 
@@ -22,37 +24,49 @@ fun LeaderboardsScreen(
     var selectedTab by remember { mutableIntStateOf(0) }
     val difficulties = GameDifficulty.entries.toTypedArray()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.leaderboards)) },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Background image (your .webp file)
+        Image(
+            painter = painterResource(R.drawable.background_main),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.leaderboards)) },
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    }
+                )
+            }
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                TabRow(selectedTabIndex = selectedTab) {
+                    difficulties.forEachIndexed { index, difficulty ->
+                        Tab(
+                            selected = selectedTab == index,
+                            onClick = { selectedTab = index },
+                            text = { Text(difficulty.displayName) }
+                        )
                     }
                 }
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            TabRow(selectedTabIndex = selectedTab) {
-                difficulties.forEachIndexed { index, difficulty ->
-                    Tab(
-                        selected = selectedTab == index,
-                        onClick = { selectedTab = index },
-                        text = { Text(difficulty.displayName) }
-                    )
+
+                when (selectedTab) {
+                    0 -> LeaderboardContent(GameDifficulty.EASY)
+                    1 -> LeaderboardContent(GameDifficulty.MEDIUM)
+                    2 -> LeaderboardContent(GameDifficulty.HARD)
                 }
-            }
-            
-            when (selectedTab) {
-                0 -> LeaderboardContent(GameDifficulty.EASY)
-                1 -> LeaderboardContent(GameDifficulty.MEDIUM)
-                2 -> LeaderboardContent(GameDifficulty.HARD)
             }
         }
     }
@@ -71,7 +85,7 @@ fun LeaderboardContent(difficulty: GameDifficulty) {
             style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(bottom = 24.dp)
         )
-        
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -88,9 +102,9 @@ fun LeaderboardContent(difficulty: GameDifficulty) {
                         style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Center
                     )
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     Text(
                         text = "No scores yet",
                         style = MaterialTheme.typography.bodyMedium,
@@ -99,7 +113,7 @@ fun LeaderboardContent(difficulty: GameDifficulty) {
                     )
                 }
             }
-            
+
             Card(
                 modifier = Modifier.weight(1f)
             ) {
@@ -112,9 +126,9 @@ fun LeaderboardContent(difficulty: GameDifficulty) {
                         style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Center
                     )
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
                     Text(
                         text = "No scores yet",
                         style = MaterialTheme.typography.bodyMedium,
