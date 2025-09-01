@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.layout.ContentScale
 import com.cryptidnewbie.matchem.R
 import com.cryptidnewbie.matchem.data.GameDifficulty
+import com.cryptidnewbie.matchem.ui.theme.DarkHeadline
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,20 +103,14 @@ fun DifficultyCard(
                 text = difficulty.displayName,
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = DarkHeadline
                 )
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Grid: ${difficulty.rows} × ${difficulty.columns}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            Text(
-                text = "Pairs: ${difficulty.pairs}",
+                text = "Cards: ${difficulty.totalCards}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )

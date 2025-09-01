@@ -96,13 +96,13 @@ fun MainMenuScreen(
                         )
 
                         Text(
-                            text = "Welcome to Match'em!",
+                            text = "Monster Card Match",
                             style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                             textAlign = TextAlign.Center
                         )
 
                         Text(
-                            text = "Test your memory by matching pairs of cards",
+                            text = "How good is your memory? Put it to the test!",
                             style = MaterialTheme.typography.bodyMedium,
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
