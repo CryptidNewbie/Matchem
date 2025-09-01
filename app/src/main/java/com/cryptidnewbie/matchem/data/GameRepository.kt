@@ -17,9 +17,6 @@ class GameRepository(private val context: Context) {
     private companion object {
         val SOUND_ENABLED = booleanPreferencesKey("sound_enabled")
         val SELECTED_CARD_BACK = stringPreferencesKey("selected_card_back")
-        val EASY_SCORES = stringPreferencesKey("easy_scores")
-        val MEDIUM_SCORES = stringPreferencesKey("medium_scores")
-        val HARD_SCORES = stringPreferencesKey("hard_scores")
         val OWNED_CARD_BACKS = stringPreferencesKey("owned_card_backs")
     }
 
@@ -40,56 +37,6 @@ class GameRepository(private val context: Context) {
     suspend fun updateSelectedCardBack(cardBackId: String) {
         context.dataStore.edit { preferences ->
             preferences[SELECTED_CARD_BACK] = cardBackId
-        }
-    }
-
-    // Scores
-    suspend fun saveScore(score: Score) {
-        val key = when (score.difficulty) {
-            GameDifficulty.EASY -> EASY_SCORES
-            GameDifficulty.MEDIUM -> MEDIUM_SCORES
-            GameDifficulty.HARD -> HARD_SCORES
-        }
-
-        context.dataStore.edit { preferences ->
-            val currentScores = getScoresFromPrefs(preferences[key])
-            val updatedScores = (currentScores + score)
-                .sortedBy { it.timeInSeconds }
-                .take(10) // Keep only top 10
-            
-            preferences[key] = Json.encodeToString(updatedScores)
-        }
-    }
-
-    fun getScores(difficulty: GameDifficulty): Flow<List<Score>> {
-        val key = when (difficulty) {
-            GameDifficulty.EASY -> EASY_SCORES
-            GameDifficulty.MEDIUM -> MEDIUM_SCORES
-            GameDifficulty.HARD -> HARD_SCORES
-        }
-
-        return context.dataStore.data.map { preferences ->
-            getScoresFromPrefs(preferences[key])
-        }
-    }
-
-    suspend fun resetAllScores() {
-        context.dataStore.edit { preferences ->
-            preferences.remove(EASY_SCORES)
-            preferences.remove(MEDIUM_SCORES)
-            preferences.remove(HARD_SCORES)
-        }
-    }
-
-    private fun getScoresFromPrefs(scoresJson: String?): List<Score> {
-        return if (scoresJson.isNullOrEmpty()) {
-            emptyList()
-        } else {
-            try {
-                Json.decodeFromString<List<Score>>(scoresJson)
-            } catch (e: Exception) {
-                emptyList()
-            }
         }
     }
 

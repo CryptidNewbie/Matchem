@@ -39,14 +39,6 @@ data class GameState(
     val difficulty: GameDifficulty = GameDifficulty.EASY
 )
 
-data class Score(
-    val playerName: String = "Player",
-    val moves: Int,
-    val timeInSeconds: Int,
-    val difficulty: GameDifficulty,
-    val timestamp: Long = System.currentTimeMillis()
-)
-
 data class AppSettings(
     val soundEnabled: Boolean = true,
     val selectedCardBack: String = "default"

@@ -63,9 +63,8 @@ To enable full Android development:
 2. **Difficulty Selection** - Choose your challenge level
 3. **Game Screen** - Interactive card grid with timer and stats
 4. **Game Over** - Results display with statistics
-5. **Settings** - Sound toggle and score reset
-6. **Leaderboards** - Top 10 scores per difficulty (structure ready)
-7. **Card Shop** - Card back customization (structure ready)
+5. **Settings** - Sound toggle and other preferences
+6. **Card Shop** - Card back customization (structure ready)
 
 ## 🛠 Technical Implementation
 
@@ -73,7 +72,7 @@ To enable full Android development:
 - **MVVM Pattern** with ViewModels and StateFlow
 - **Repository Pattern** for data management
 - **Navigation Component** for screen routing
-- **DataStore** for preferences and score persistence
+- **DataStore** for preferences persistence
 
 ### Technologies Used
 - **Kotlin 2.0** with coroutines
