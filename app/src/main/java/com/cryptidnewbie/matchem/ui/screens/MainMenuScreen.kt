@@ -4,7 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Leaderboard
+
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
@@ -25,7 +25,6 @@ import com.cryptidnewbie.matchem.ui.ads.BannerAdView
 @Composable
 fun MainMenuScreen(
     onPlayClick: () -> Unit,
-    onLeaderboardsClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onCardShopClick: () -> Unit
 ) {
@@ -124,21 +123,6 @@ fun MainMenuScreen(
                             Text(
                                 text = stringResource(R.string.play),
                                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                            )
-                        }
-
-                        FilledTonalButton(
-                            onClick = onLeaderboardsClick,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp),
-                            shape = RoundedCornerShape(16.dp)
-                        ) {
-                            Icon(Icons.Default.Leaderboard, contentDescription = "Leaderboards")
-                            Spacer(Modifier.width(8.dp))
-                            Text(
-                                text = stringResource(R.string.leaderboards),
-                                style = MaterialTheme.typography.titleMedium
                             )
                         }
 

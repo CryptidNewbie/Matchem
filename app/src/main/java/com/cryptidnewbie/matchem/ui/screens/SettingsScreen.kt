@@ -21,7 +21,6 @@ fun SettingsScreen(
     onBackClick: () -> Unit
 ) {
     var soundEnabled by remember { mutableStateOf(true) }
-    var showResetDialog by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -83,24 +82,6 @@ fun SettingsScreen(
                                 .fillMaxWidth()
                                 .padding(16.dp)
                         ) {
-                            Button(
-                                onClick = { showResetDialog = true },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.error
-                                )
-                            ) {
-                                Text(stringResource(R.string.reset_scores))
-                            }
-                        }
-                    }
-
-                    Card {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                        ) {
                             TextButton(
                                 onClick = { /* TODO: Open privacy policy */ },
                                 modifier = Modifier.fillMaxWidth()
@@ -111,32 +92,6 @@ fun SettingsScreen(
                     }
                 }
             }
-        }
-
-        if (showResetDialog) {
-            AlertDialog(
-                onDismissRequest = { showResetDialog = false },
-                title = { Text(stringResource(R.string.reset_scores)) },
-                text = { Text(stringResource(R.string.reset_confirmation)) },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            // TODO: Reset scores
-                            showResetDialog = false
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.error
-                        )
-                    ) {
-                        Text(stringResource(R.string.yes))
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showResetDialog = false }) {
-                        Text(stringResource(R.string.no))
-                    }
-                }
-            )
         }
     }
 }

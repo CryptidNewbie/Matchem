@@ -19,7 +19,6 @@ sealed class Screen(val route: String) {
             "game_over/${difficulty.name}/$moves/$time"
     }
     object Settings : Screen("settings")
-    object Leaderboards : Screen("leaderboards")
     object CardShop : Screen("card_shop")
 }
 
@@ -34,7 +33,6 @@ fun MatchEmNavigation(
         composable(Screen.MainMenu.route) {
             MainMenuScreen(
                 onPlayClick = { navController.navigate(Screen.DifficultySelection.route) },
-                onLeaderboardsClick = { navController.navigate(Screen.Leaderboards.route) },
                 onSettingsClick = { navController.navigate(Screen.Settings.route) },
                 onCardShopClick = { navController.navigate(Screen.CardShop.route) }
             )
@@ -90,12 +88,6 @@ fun MatchEmNavigation(
 
         composable(Screen.Settings.route) {
             SettingsScreen(
-                onBackClick = { navController.popBackStack() }
-            )
-        }
-
-        composable(Screen.Leaderboards.route) {
-            LeaderboardsScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }
