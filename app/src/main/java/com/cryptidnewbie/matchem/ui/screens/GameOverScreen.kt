@@ -86,7 +86,7 @@ fun GameOverScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            text = String.format("%02d:%02d", minutes, seconds),
+                            text = String.format("%d:%02d", minutes, seconds),
                             style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.primary
                         )
