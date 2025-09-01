@@ -12,11 +12,11 @@ import androidx.core.view.WindowCompat
 
 // Modern Material-inspired color palette
 private val ModernLightColorScheme = lightColorScheme(
-    primary = Color(0xFF006494),       // Blue accent for buttons
-    secondary = Color(0xFF39A0ED),     // Lighter blue accent
-    tertiary = Color(0xFFF7C873),      // Warm accent
-    background = Color(0xFFF3F6FB),    // Soft off-white background
-    surface = Color(0xFFE9EEF6),       // Light gray for cards
+    primary = DarkHeadline,             // UX Designer specified color for buttons
+    secondary = Color(0xFF39A0ED),      // Lighter blue accent
+    tertiary = Color(0xFFF7C873),       // Warm accent
+    background = Color(0xFFF3F6FB),     // Soft off-white background
+    surface = Color(0xFFE9EEF6),        // Light gray for cards
     onPrimary = Color.White,
     onSecondary = Color.White,
     onTertiary = Color.Black,
@@ -25,12 +25,12 @@ private val ModernLightColorScheme = lightColorScheme(
 )
 
 private val ModernDarkColorScheme = darkColorScheme(
-    primary = Color(0xFF62B6CB),       // Lighter blue for buttons
-    secondary = Color(0xFF1B3A4B),     // Deep blue for accents
+    primary = DarkHeadline,             // UX Designer specified color for buttons
+    secondary = Color(0xFF1B3A4B),      // Deep blue for accents
     tertiary = Color(0xFFF7C873),
-    background = Color(0xFF121A23),    // Soft dark background
-    surface = Color(0xFF1B263B),       // Slightly lighter for cards
-    onPrimary = Color.Black,
+    background = Color(0xFF121A23),     // Soft dark background
+    surface = Color(0xFF1B263B),        // Slightly lighter for cards
+    onPrimary = Color.White,            // Changed to white for better contrast
     onSecondary = Color.White,
     onTertiary = Color.Black,
     onBackground = Color.White,

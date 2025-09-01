@@ -15,3 +15,6 @@ val CardBack = Color(0xFF2196F3)
 val CardFront = Color(0xFFFFFFFF)
 val MatchedCard = Color(0xFF4CAF50)
 val GameBackground = Color(0xFFF5F5F5)
+
+// UX Designer specified colors
+val DarkHeadline = Color(0xFF1b263a)

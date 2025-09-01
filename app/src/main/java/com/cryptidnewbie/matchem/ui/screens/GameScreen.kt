@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -79,14 +80,43 @@ fun GameScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
+                    Column(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("${stringResource(R.string.moves)}: ${gameState.moves}")
-                        Text("${stringResource(R.string.matches)}: ${gameState.matches}/${gameState.difficulty.pairs}")
-                        GameTimer(startTime = gameState.startTime, isRunning = !gameState.isPaused && !gameState.isGameComplete)
+                        // Header row
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = stringResource(R.string.moves),
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                            Text(
+                                text = stringResource(R.string.matches),
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                            Text(
+                                text = stringResource(R.string.time),
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                        
+                        // Values row
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "${gameState.moves}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Text(
+                                text = "${gameState.matches}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            GameTimerValue(startTime = gameState.startTime, isRunning = !gameState.isPaused && !gameState.isGameComplete)
+                        }
                     }
                 },
                 navigationIcon = {
@@ -260,7 +290,34 @@ fun GameTimer(
     val seconds = elapsed % 60
 
     Text(
-        text = "${stringResource(R.string.time)}: ${String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)}",
+        text = "${stringResource(R.string.time)}: ${String.format(Locale.getDefault(), "%d:%02d", minutes, seconds)}",
+        style = MaterialTheme.typography.bodyMedium
+    )
+}
+
+@Composable
+fun GameTimerValue(
+    startTime: Long,
+    isRunning: Boolean
+) {
+    var currentTime by remember { mutableLongStateOf(System.currentTimeMillis()) }
+
+    LaunchedEffect(isRunning) {
+        while (isRunning) {
+            currentTime = System.currentTimeMillis()
+            delay(1000)
+        }
+    }
+
+    val elapsed = if (startTime > 0) {
+        ((currentTime - startTime) / 1000).toInt()
+    } else 0
+
+    val minutes = elapsed / 60
+    val seconds = elapsed % 60
+
+    Text(
+        text = String.format(Locale.getDefault(), "%d:%02d", minutes, seconds),
         style = MaterialTheme.typography.bodyMedium
     )
 }
